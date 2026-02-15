@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DampWatch Results & Remedies</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px; }
+  .container { max-width:700px; margin:auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+  h1, h2 { text-align:center; background:linear-gradient(to right,#007BFF,#FF69B4); -webkit-background-clip:text; color:transparent; }
+  textarea { width:100%; height:150px; padding:10px; border-radius:8px; border:1px solid #ccc; resize:vertical; }
+  button { margin-top:10px; padding:10px 20px; border:none; border-radius:8px; background:linear-gradient(to right,#007BFF,#FF69B4); color:#fff; cursor:pointer; }
+  .bar-container { display:flex; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
+  .bar-fill { height:30px; border-radius:6px; transition:width 0.5s; }
+  .bar-text { margin-left:10px; font-weight:bold; cursor:pointer; }
+  .remedies { padding:10px; background:#fff0f5; border-radius:8px; border:1px solid #ddd; }
+  img.qr { display:block; margin:auto; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>DampWatch Results & Moisture Remedies</h1>
+
+  <p>Paste your DampWatch readings below (0–100%, one per line):</p>
+  <textarea id="results" placeholder="e.g., 32&#10;45&#10;78"></textarea>
+  <button onclick="processResults()">Show Colored Results</button>
+
+  <div id="coloredResults" style="margin-top:20px;"></div>
+
+  <h2>Moisture Control Remedies</h2>
+  <div class="remedies">
+    <ul>
+      <li>Keep indoor humidity below 60% using dehumidifiers.</li>
+      <li>Improve ventilation in bathrooms and kitchens.</li>
+      <li>Repair leaks and seal water entry points.</li>
+      <li>Use moisture-resistant paints and coatings.</li>
+      <li>Monitor moisture levels regularly with DampWatch.</li>
+      <li>Clean mold promptly with suitable cleaners and protective gear.</li>
+    </ul>
+  </div>
+
+  <p style="text-align:center;">
+    Scan QR to visit the site: <br>
+    <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://yourusername.github.io/dampwatch/" alt="DampWatch QR Code">
+  </p>
+</div>
+
+<script>
+const remedies = [
+  "Keep indoor humidity below 60% using dehumidifiers.",
+  "Improve ventilation in bathrooms and kitchens.",
+  "Repair leaks and seal water entry points.",
+  "Use moisture-resistant paints and coatings.",
+  "Monitor moisture levels regularly with DampWatch.",
+  "Clean mold promptly with suitable cleaners and protective gear."
+];
+
+function processResults() {
+  const textarea = document.getElementById('results');
+  const output = document.getElementById('coloredResults');
+  const lines = textarea.value.split('\n');
+  output.innerHTML = '';
+
+  lines.forEach(line => {
+    const value = parseFloat(line.trim());
+    if(!isNaN(value)) {
+      const clamped = Math.min(Math.max(value,0),100);
+      const isHigh = clamped >= 70;
+      const hue = isHigh ? 330 : 240 + (clamped/100)*90;
+      const barContainer = document.createElement('div');
+      barContainer.className = 'bar-container';
+
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill';
+      fill.style.width = clamped + '%';
+      fill.style.backgroundColor = `hsl(${hue},80%,50%)`;
+
+      const text = document.createElement('span');
+      text.className = 'bar-text';
+      text.textContent = `${value}% ${isHigh?'⚠️':''}`;
+      text.style.color = isHigh ? '#ff0066' : '#333';
+      text.title = remedies[clamped>=70?0:1];
+
+      barContainer.appendChild(fill);
+      barContainer.appendChild(text);
+      output.appendChild(barContainer);
+    }
+  });
+}
+</script>
+
+</body>
+</html>
